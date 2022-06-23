@@ -17,7 +17,7 @@ import torch.utils.data.datapipes as dp
 from torch.testing._internal.common_cuda import TEST_MULTIGPU
 from torch.testing._internal.common_utils import (
     TestCase, run_tests, TEST_WITH_ASAN, TEST_WITH_ROCM, IS_WINDOWS,
-    TEST_WITH_CROSSREF, TemporaryFileName, TemporaryDirectoryName)
+    TEST_WITH_CROSSREF, TEST_WITH_TORCHDYNAMO, TemporaryFileName, TemporaryDirectoryName)
 from torch.autograd import (_record_function_with_args_enter, _record_function_with_args_exit)
 from torch.autograd.profiler import profile as _profile
 from torch.autograd.profiler_legacy import profile as _profile_legacy
@@ -360,6 +360,7 @@ class TestExecutionGraph(TestCase):
 
 class TestProfiler(TestCase):
 
+    @unittest.skipIf(TEST_WITH_TORCHDYNAMO, "torchdynamo intercepts calls and changes the callsite.")
     @unittest.skipIf(TEST_WITH_CROSSREF, "crossref intercepts calls and changes the callsite.")
     def test_source(self):
         """Checks that source code attribution works for eager, TS and autograd mode

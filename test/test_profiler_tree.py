@@ -8,7 +8,7 @@ import unittest
 
 import torch
 from torch.testing._internal.common_utils import (
-    TestCase, run_tests, IS_WINDOWS, TEST_WITH_CROSSREF)
+    TestCase, run_tests, IS_WINDOWS, TEST_WITH_CROSSREF, TEST_WITH_TORCHDYNAMO)
 
 
 class ProfilerTree:
@@ -296,6 +296,7 @@ class TestProfilerTree(TestCase):
             [memory]"""
         )
 
+    @unittest.skipIf(TEST_WITH_TORCHDYNAMO, "torchdynamo intercepts calls and changes the callsite.")
     @unittest.skipIf(TEST_WITH_CROSSREF, "crossref intercepts calls and changes the callsite.")
     @unittest.skipIf(torch.has_cuda, "CUDA invokes extra Python functions.")
     @ProfilerTree.test
@@ -406,6 +407,7 @@ class TestProfilerTree(TestCase):
                         <built-in method _disable_profiler of PyCapsule object at 0xXXXXXXXXXXXX>"""
         )
 
+    @unittest.skipIf(TEST_WITH_TORCHDYNAMO, "torchdynamo intercepts calls and changes the callsite.")
     @unittest.skipIf(TEST_WITH_CROSSREF, "crossref intercepts calls and changes the callsite.")
     @unittest.skipIf(torch.has_cuda, "CUDA invokes extra Python functions.")
     @ProfilerTree.test
