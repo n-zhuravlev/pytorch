@@ -14528,19 +14528,18 @@ op_db: List[OpInfo] = [
         aten_backward_name='rrelu_with_noise_backward',
         op=lambda input, *args, **kwargs:
             wrapper_set_seed(torch.nn.functional.rrelu, input, *args, **kwargs),
+        inplace_variant=lambda input, *args, **kwargs:
+            wrapper_set_seed(torch.nn.functional.rrelu, input, *args, inplace=True, **kwargs),
         ref=_NOTHING,
         dtypes=floating_types_and(torch.bfloat16),
         dtypesIfCUDA=floating_types_and(torch.float16, torch.bfloat16),
         gradcheck_wrapper=wrapper_set_seed,
         supports_forward_ad=True,
-        supports_autograd=True,
-        assert_autodiffed=False,
-        supports_gradgrad=True,
+        supports_fwgrad_bwgrad=True,
         supports_out=False,
         sample_kwargs=lambda device, dtype, input:
-            ({'lower': 0., 'upper': 1.}, {'lower': 0., 'upper': 1.}),
-        inplace_variant=lambda input, *args, **kwargs:
-            wrapper_set_seed(partial(torch.nn.functional.rrelu, inplace=True), input, *args, **kwargs),
+            (dict(lower=0., upper=1., training=True), dict(lower=0., upper=1., training=True)),
+        sample_inputs_func=partial(sample_inputs_elementwise_unary, op_kwargs=dict(lower=0., upper=1., training=True)),
         decorators=(
             DecorateInfo(
                 toleranceOverride({
